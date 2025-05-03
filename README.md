@@ -1,59 +1,68 @@
-# `dkeeperApp`
+# DKeeper App
 
-Welcome to your new `dkeeperApp` project and to the Internet Computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+## ✨ Overview
+The DKeeper App is a decentralized application (dApp) built using Motoko and the Internet Computer (IC) platform. It allows users to create, edit, and delete notes in a decentralized manner.
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+## ⚒️ Project Structure
 
-To learn more before you start working with `dkeeperApp`, see the following documentation available online:
+### Backend
+The backend is implemented in Motoko and handles the core logic of the application. It includes the following files:
+- `dfx.json`: Configuration file for the DFINITY SDK.
+- `package.json`: Contains dependencies and scripts for the backend.
+- `tsconfig.json`: TypeScript configuration file.
+- `src/dkeeperApp_backend/`: Contains the Motoko source code for the backend logic.
+
+### Frontend
+The frontend is implemented using modern web technologies and includes the following files:
+- `index.html`: The main HTML file for the frontend.
+- `package.json`: Contains dependencies and scripts for the frontend.
+- `tsconfig.json`: TypeScript configuration file.
+- `vite.config.js`: Configuration file for Vite.
+- `public/styles.css`: Contains the styles for the application.
+- `src/`: Contains the React components and other frontend logic.
+  - `components/`: Includes React components such as `App.tsx`, `CreateArea.tsx`, `Footer.tsx`, and `Header.tsx`.
+
+## 💫 Features
+- Create notes with a title and content.
+- Edit existing notes.
+- Delete notes.
+- Decentralized storage of notes on the Internet Computer.
+
+## 💬 How to Run
+
+### Prerequisites
+- Install [DFINITY SDK](https://internetcomputer.org/docs/current/developer-docs/setup/install/) to run the backend.
+- Install [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/) for the frontend.
+
+### Steps
+1. Clone the repository.
+2. Navigate to the `dkeeperApp` directory.
+3. Start the backend:
+   ```bash
+   dfx start
+   ```
+4. Navigate to the `dkeeperApp_frontend` directory and install dependencies:
+   ```bash
+   npm install
+   ```
+5. Deploy the canisters:
+   ```bash
+   dfx deploy
+   ```
+6. Open the link provided in the terminal: (example below)
+   ```bash
+   URLs:
+    Frontend canister via browser:
+      dkeeperApp_frontend:
+        - http://ulvla-h7777-77774-qaacq-cai.localhost:0000/ (Recommended)
+        - http://127.0.0.1:0000/?canisterId=ulvla-h7777-77774-qaacq-cai (Legacy)
+    Backend canister via Candid interface:
+      dkeeperApp_backend: http://127.0.0.1:0000/?canisterId=abcd-ef123-45678-ghijk-lmn&id=abcde-ef123-45678-ghijk-lmn
+
+## 📚 Reference
+To find out more, see the following documentation available online:
 
 - [Quick Start](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-locally)
 - [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install)
 - [Motoko Programming Language Guide](https://internetcomputer.org/docs/current/motoko/main/motoko)
 - [Motoko Language Quick Reference](https://internetcomputer.org/docs/current/motoko/main/language-manual)
-
-If you want to start working on your project right away, you might want to try the following commands:
-
-```bash
-cd dkeeperApp/
-dfx help
-dfx canister --help
-```
-
-## Running the project locally
-
-If you want to test your project locally, you can use the following commands:
-
-```bash
-# Starts the replica, running in the background
-dfx start --background
-
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
-```
-
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
-
-If you have made changes to your backend canister, you can generate a new candid interface with
-
-```bash
-npm run generate
-```
-
-at any time. This is recommended before starting the frontend development server, and will be run automatically any time you run `dfx deploy`.
-
-If you are making frontend changes, you can start a development server with
-
-```bash
-npm start
-```
-
-Which will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
-
-### Note on frontend environment variables
-
-If you are hosting frontend code somewhere without using DFX, you may need to make one of the following adjustments to ensure your project does not fetch the root key in production:
-
-- set`DFX_NETWORK` to `ic` if you are using Webpack
-- use your own preferred method to replace `process.env.DFX_NETWORK` in the autogenerated declarations
-  - Setting `canisters -> {asset_canister_id} -> declarations -> env_override to a string` in `dfx.json` will replace `process.env.DFX_NETWORK` with the string in the autogenerated declarations
-- Write your own `createActor` constructor
