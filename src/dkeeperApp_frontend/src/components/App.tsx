@@ -16,64 +16,69 @@ interface Note {
 }
 
 function App() {
-
   const [notes, setNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
 
-  const fetchNotes = useCallback(async () => {
+  const withLoading = useCallback(async (callback: () => Promise<void>) => {
     setIsLoading(true);
     try {
-      const response = await dkeeperApp_backend.getNotes();
-      console.log(response);
-      setNotes(response);
+      await callback();
     } catch (error) {
-      console.error('Error fetching notes: ', error);
-      toast.error('Failed to fetch notes. Please try again later.');
+      console.error(error);
+      toast.error("An error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
+  }, []);
+
+  const fetchNotes = useCallback(async () => {
+    const response = await dkeeperApp_backend.getNotes();
+    setNotes(response);
   }, []);
 
   useEffect(() => {
-    fetchNotes();
-  }, []);
+    withLoading(fetchNotes);
+  }, [fetchNotes, withLoading]);
 
-  const createNote = useCallback(async (title: string, content: string) => {
-    setIsLoading(true);
-    try {
-      await dkeeperApp_backend.createNote(title, content);
-      fetchNotes();
-      toast.success('Note created successfully!');
-    } catch (error) {
-      console.error('Error creating note: ', error);
-      toast.error('Failed to create note.');
-    }
-    setIsLoading(false);
-  }, []);
+  const createNote = useCallback(
+    async (title: string, content: string) => {
+      await withLoading(async () => {
+        await dkeeperApp_backend.createNote(title, content);
+        setNotes((prevNotes) => [
+          ...prevNotes,
+          { id: Date.now().toString(), title, content },
+        ]);
+        toast.success("Note created successfully!");
+      });
+    },
+    [withLoading]
+  );
 
-  const editNote = useCallback(async (updatedData: { id: string, title: string; content: string }) => {
-    setIsLoading(true);
-    try {
-      await dkeeperApp_backend.editNote(updatedData);
-      toast.success('Note updated successfully!');
-    } catch (error) {
-      console.error('Error editing note: ', error);
-      toast.error('Failed to update note.');
-    }
-    setIsLoading(false);
-  }, []);
+  const editNote = useCallback(
+    async (updatedData: { id: string; title: string; content: string }) => {
+      await withLoading(async () => {
+        await dkeeperApp_backend.editNote(updatedData);
+        setNotes((prevNotes) =>
+          prevNotes.map((note) =>
+            note.id === updatedData.id ? { ...note, ...updatedData } : note
+          )
+        );
+        toast.success("Note updated successfully!");
+      });
+    },
+    [withLoading]
+  );
 
-  const deleteNote = useCallback(async (id: string) => {
-    setIsLoading(true);
-    try {
-      await dkeeperApp_backend.deleteNote(id);
-      fetchNotes();
-      toast.success('Note deleted successfully!');
-    } catch (error) {
-      console.error('Error deleting note: ', error);
-      toast.error('Failed to delete note.');
-    }
-    setIsLoading(false);
-  }, []);
+  const deleteNote = useCallback(
+    async (id: string) => {
+      await withLoading(async () => {
+        await dkeeperApp_backend.deleteNote(id);
+        setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+        toast.success("Note deleted successfully!");
+      });
+    },
+    [withLoading]
+  );
 
   return (
     <div>
